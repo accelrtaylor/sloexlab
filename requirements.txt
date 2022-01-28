@@ -4,3 +4,4 @@ voila
 ipywidgets
 cpymad
 ipympl
+pandas
