@@ -3,3 +3,4 @@ matplotlib
 voila
 ipywidgets
 cpymad
+ipympl
