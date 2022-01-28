@@ -6,3 +6,4 @@ cpymad
 ipympl
 pandas
 tqdm
+io
