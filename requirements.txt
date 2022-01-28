@@ -5,3 +5,5 @@ ipywidgets
 cpymad
 ipympl
 pandas
+tqdm
+io
