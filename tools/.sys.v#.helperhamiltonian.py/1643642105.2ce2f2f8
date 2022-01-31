@@ -149,18 +149,18 @@ def readtfs(filename, usecols=None, index_col=0, check_lossbug=True):
     table.columns= table.columns.str.strip().str.lower()
     return header, table
 
-def HamiltonianContour(tdf, nu, nu_res, ele, output, title=''):   
+def HamiltonianContour(tdf, nu, nu_res, ele, rmin, rmax, ncount, output, title=''):   
     import matplotlib.cm as cm
     cmap = cm.get_cmap("coolwarm")
     # Compute contours
     dnu = nu - nu_res
-    npoints = 500
+    npoints = ncount
     j0 = 0.0002
 
     try:
-        beta = tdf.loc[ele]['beta11']
-        alpha = tdf.loc[ele]['alfa11']
-        mux_seh = 2*np.pi*tdf.loc[ele]['mu1']
+        beta = tdf.loc[ele]['betx']
+        alpha = tdf.loc[ele]['alfx']
+        mux_seh = 2*np.pi*tdf.loc[ele]['mux']
         output.clear_output()
     except KeyError:
         with output:
@@ -176,7 +176,7 @@ def HamiltonianContour(tdf, nu, nu_res, ele, output, title=''):
     mux = -(mux_seh - mux_sext)
 
     #r = np.linspace(0, 4, npoints)
-    r = 10**np.linspace(-10, 0.5, npoints)
+    r = 10**np.linspace(rmin, rmax, npoints)
     phi = np.linspace(-np.pi, np.pi, npoints)
     rr, phiphi = np.meshgrid(r, phi)
 
