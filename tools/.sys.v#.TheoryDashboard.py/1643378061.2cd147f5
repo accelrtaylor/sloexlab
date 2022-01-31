@@ -56,10 +56,11 @@ def TheoryDashboard():
     h4 = widgets.HTML("<h2>Hamiltonian Parameters</h2>", layout=widgets.Layout(height='auto'))
     tdf = widgets.FileUpload(accept='.tfs', description='Twiss DataFrame', multiple=False, style=style, layout=widgets.Layout(width='auto'))
     ele_pos = widgets.Text(value='ES', description='Element',  disabled=False, layout=widgets.Layout(width='auto'))
+
+
     h_tdf = widgets.HTML("  Produce .tfs file from 'Tracking Code' tab")
-    Hamilton_err = widgets.Output()
  
-    col_ham = widgets.VBox([h4, ele_pos, tdf, h_tdf, Hamilton_err], layout=widgets.Layout(width='250px', align='center'))
+    col_ham = widgets.VBox([h4, tdf, h_tdf, ele_pos], layout=widgets.Layout(width='250px', align='center'))
     
     '====================== OUTPUTS ============================'
     #Plotting Steinbach
@@ -119,31 +120,21 @@ def TheoryDashboard():
     def HamiltonPlot(change):
         """Observes changes to parameters, redraws Hamiltonian & updates plot"""
         import matplotlib.cm as cm
-        if tdf.data != []:
-            tdf_bytes = io.BytesIO( tdf.data[0] )                # Converts uploaded file into binary
-            TDF = io.TextIOWrapper(tdf_bytes, encoding='utf-8')  # Unwraps binary values
-            header, twiss_df = readtfs(TDF)                      # Extracts header information and dataframe.
+        tdf_bytes = io.BytesIO( tdf.data[0] )                # Converts uploaded file into binary
+        TDF = io.TextIOWrapper(tdf_bytes, encoding='utf-8')  # Unwraps binary values
+        header, twiss_df = readtfs(TDF)                      # Extracts header information and dataframe.
 
-            try:
-                axH.clear() 
-                xx, xpxp, hh = HamiltonianContour(twiss_df, QX.value, QX_r.value, ele_pos.value) #Calculates values to plot as contour
-                                                                      #Important to not overlay plots
-                axH.contour(xx, xpxp, hh, 500, colors=[cm.get_cmap("coolwarm")(0)], linestyles='solid') #Edit this to change plot
-                Hamilton_err.clear_output()
-            except KeyError:
-                with Hamilton_err:
-                    Hamilton_err.clear_output()
-                    CRED = '\033[91m'
-                    CEND = '\033[0m'
-                    print(CRED + f'ERROR : Element {ele_pos.value} not found in lattice.' + CEND)
-            axH.axvline(ES.value, color='black')
-            axH.set_xlabel('x [m]')
-            axH.set_ylabel('px')
-            axH.set_xlim(-ES.value-0.01, ES.value+0.01)
-            axH.set_ylim(-0.004, 0.004)
-            axH.set_title(f'Hamiltonian - nu={QX.value} ')
+        xx, xpxp, hh = HamiltonianContour(twiss_df, QX.value, QX_r.value, ele_pos.value) #Calculates values to plot as contour
+        axH.clear()                                                       #Important to not overlay plots
+        axH.contour(xx, xpxp, hh, 500, colors=[cm.get_cmap("coolwarm")(0)], linestyles='solid') #Edit this to change plot
+        axH.axvline(ES.value, color='black')
+        axH.set_xlabel('x [m]')
+        axH.set_ylabel('px')
+        axH.set_xlim(-ES.value-0.01, ES.value+0.01)
+        axH.set_ylim(-0.004, 0.004)
+        axH.set_title(f'Hamiltonian - nu={QX.value} ')
 
-            figH.canvas.draw()
+        figH.canvas.draw()
         
     '====================== CREATES DASHBOARD FROM INPUTS & OUTPUTS ============================'
     

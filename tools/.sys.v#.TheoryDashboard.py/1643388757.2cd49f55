@@ -129,10 +129,8 @@ def TheoryDashboard():
                 xx, xpxp, hh = HamiltonianContour(twiss_df, QX.value, QX_r.value, ele_pos.value) #Calculates values to plot as contour
                                                                       #Important to not overlay plots
                 axH.contour(xx, xpxp, hh, 500, colors=[cm.get_cmap("coolwarm")(0)], linestyles='solid') #Edit this to change plot
-                Hamilton_err.clear_output()
             except KeyError:
                 with Hamilton_err:
-                    Hamilton_err.clear_output()
                     CRED = '\033[91m'
                     CEND = '\033[0m'
                     print(CRED + f'ERROR : Element {ele_pos.value} not found in lattice.' + CEND)
