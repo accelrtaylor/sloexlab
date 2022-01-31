@@ -6,6 +6,7 @@ from tqdm.notebook import tqdm
 import io
 
 from tools.helpers import *
+from tools.Hamiltonian import *
 
 def TheoryDashboard():
     '''
