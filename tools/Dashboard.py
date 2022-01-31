@@ -1,8 +1,8 @@
 import ipywidgets as widgets
 
-from tools.TheoryDashboard import *
-from tools.TrackDashboard import *
-from tools.VisualiserDashboard import *
+from tools.TheoryDashboard.TheoryDashboard import *
+from tools.TrackDashboard.TrackDashboard import *
+from tools.VisualiserDashboard.VisualiserDashboard import *
 from tools.CreditFooter import *
 
 def Dashboard():
