@@ -6,6 +6,7 @@ from tqdm.notebook import tqdm
 import io
 
 from tools.helpers import *
+from tools.Hamiltonian import *
 
 def TheoryDashboard():
     '''
@@ -124,18 +125,9 @@ def TheoryDashboard():
             TDF = io.TextIOWrapper(tdf_bytes, encoding='utf-8')  # Unwraps binary values
             header, twiss_df = readtfs(TDF)                      # Extracts header information and dataframe.
 
-            try:
-                Hamilton_err.clear_output()
-                axH.clear() 
+            axH.clear() 
                 xx, xpxp, hh = HamiltonianContour(twiss_df, QX.value, QX_r.value, ele_pos.value) #Calculates values to plot as contour
-                                                                      #Important to not overlay plots
-                axH.contour(xx, xpxp, hh, 500, colors=[cm.get_cmap("coolwarm")(0)], linestyles='solid') #Edit this to change plot
-            except KeyError:
-                with Hamilton_err:
-                    Hamilton_err.clear_output()
-                    CRED = '\033[91m'
-                    CEND = '\033[0m'
-                    print(CRED + f'ERROR : Element {ele_pos.value} not found in lattice.' + CEND)
+            axH.contour(xx, xpxp, hh, 500, colors=[cm.get_cmap("coolwarm")(0)], linestyles='solid') #Edit this to change plot
             axH.axvline(ES.value, color='black')
             axH.set_xlabel('x [m]')
             axH.set_ylabel('px')

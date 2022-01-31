@@ -72,13 +72,11 @@ def w_to_x(w, wdot, nu, alpha, beta, output):
     x = np.sqrt(beta)*w
     try:
         xp = wdot/(nu*np.sqrt(beta)) - alpha*w/np.sqrt(beta)
-        return x, xp
     except FloatingPointError:
+        xp = wdot/(nu*np.sqrt(beta)) - alpha*w/np.sqrt(beta)
         with output:
             print('Error: Division by zero')
-        xp = np.empty(np.shape(x))
-        xp[:] = np.nan
-        return x, xp
+    return x, xp
 
 def hamiltonian(w, wdot, nu, dnu, p40tilde, p3rtilde):
     term1 = dnu*nu/2 * (w**2 + wdot**2/nu**2)
@@ -161,7 +159,6 @@ def HamiltonianContour(tdf, nu, nu_res, ele, output, title=''):
         beta = tdf.loc[ele]['beta11']
         alpha = tdf.loc[ele]['alfa11']
         mux_seh = 2*np.pi*tdf.loc[ele]['mu1']
-        output.clear_output()
     except KeyError:
         with output:
             output.clear_output()

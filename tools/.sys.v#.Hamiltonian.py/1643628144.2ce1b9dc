@@ -161,7 +161,6 @@ def HamiltonianContour(tdf, nu, nu_res, ele, output, title=''):
         beta = tdf.loc[ele]['beta11']
         alpha = tdf.loc[ele]['alfa11']
         mux_seh = 2*np.pi*tdf.loc[ele]['mu1']
-        output.clear_output()
     except KeyError:
         with output:
             output.clear_output()

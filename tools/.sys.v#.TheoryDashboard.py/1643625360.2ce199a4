@@ -5,8 +5,6 @@ import pandas as pd
 from tqdm.notebook import tqdm
 import io
 
-import warnings
-
 from tools.helpers import *
 from tools.Hamiltonian import *
 
@@ -128,11 +126,8 @@ def TheoryDashboard():
             header, twiss_df = readtfs(TDF)                      # Extracts header information and dataframe.
 
             axH.clear() 
-            xx, xpxp, hh = HamiltonianContour(twiss_df, QX.value, QX_r.value, ele_pos.value, Hamilton_err) #Calculates values to 
-
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                axH.contour(xx, xpxp, hh, 500, colors=[cm.get_cmap("coolwarm")(0)], linestyles='solid') #Edit this to change plot
+            xx, xpxp, hh = HamiltonianContour(twiss_df, QX.value, QX_r.value, ele_pos.value, Hamilton_err) #Calculates values to contour plot
+            axH.contour(xx, xpxp, hh, 500, colors=[cm.get_cmap("coolwarm")(0)], linestyles='solid') #Edit this to change plot
             axH.axvline(ES.value, color='black')
             axH.set_xlabel('x [m]')
             axH.set_ylabel('px')
