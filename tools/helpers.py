@@ -122,3 +122,9 @@ def make_beam_dist(N, dpp, betx, bety, alfx, alfy, dx, dy, dpx, dpy, ex, ey):
     yp = alfy*y + bety*py
     
     return(x, xp, y, yp, 0, Del)
+
+
+def rad(x):
+    'Defining radians'
+    theta = x * np.pi / 180
+    return theta

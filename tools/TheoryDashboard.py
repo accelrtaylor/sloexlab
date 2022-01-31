@@ -2,24 +2,21 @@ import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from tqdm.notebook import tqdm
-import io
-
-import warnings
 
 from tools.helpers import *
+
+from tools.Steinbach import *
 from tools.Hamiltonian import *
 
 def TheoryDashboard():
     '''
-    Dashboard requesting for a range of accelerator parameters.
-    Outputs two tabs: Theoretical steinbach schematic and Hamiltonian from Twiss Data Frame
+    Dashboard requesting inputs which affect calculations of Steinbach & Kobayashi-Hamiltonian diagrams
+    Two outputs : from tools.Steinbach and tools.Hamiltonian
     '''
 
     style = {'description_width': 'initial'}
     
-    '====================== INPUTS ============================'
-    #Baseline parameters
+    '====================== Steinbach Inputs ============================'
     h1 = widgets.HTML("<h2>Baseline Parameters</h2>")
     S = widgets.FloatText(value=36.7168, description='S [m-1]', step=0.25)  # Virtual Sextupole Strength
     QX = widgets.FloatText(value=1.67, description='QX', step=0.001)        # Beam horizontal tune
@@ -29,21 +26,20 @@ def TheoryDashboard():
     DQX = widgets.FloatText(value=-4, description='DQX', step=0.1)          # Chromaticity
     DPP = widgets.FloatText(value=1E-4, description='dpp', step=1E-4)       # Particle momentum spread
 
-    params_base = [h1, S, QX, QX_r, DQX, Np, ex, DPP]                       #Listing all baseline parameters
-    col_param = widgets.VBox(params_base)                                           #Putting widgets into dashboard
+    Steinbach_inputs = [S, QX, QX_r, DPP, DQX, ex, Np]
+    col_param = widgets.VBox([h1, widgets.VBox(Steinbach_inputs)])                          #Putting widgets into dashboard
 
-    #Spiral step parameters
+    '====================== Spiral Step Inputs ============================'
     h2 = widgets.HTML("<h2>Spiral Step Parameters</h2>", layout=widgets.Layout(height='auto'))
     ES = widgets.FloatText(value=0.055, description='ES', step = 0.01)      # Electrostatic Septum position
     phi = widgets.FloatText(value=45, description='phi')                    # Orientation of separatrices
     spir = widgets.FloatText(description='Spiral Step', disabled=True)      # Maximum Spiral Step
     kick =  widgets.FloatText(description='Spiral Kick', disabled=True)     # Maximum Spiral Kick
     
-    Spiral_Step = [S, ES, phi]                                              #Listing widgets which affect the spiral step
+    Spiral_Step = [S, ES, phi, spir, kick]                                  #Listing widgets which affect the spiral step
     col_spiral = widgets.VBox([h2, ES, phi, spir, kick])                    #Putting spiral step widgets into dashboard
-    
 
-    #Hardt Condition parameters
+    '====================== Hardt Condition Inputs ============================'
     h3 = widgets.HTML("<h2>Hardt Condition Parameters</h2>", layout=widgets.Layout(height='auto'))
     hardt_chroma = widgets.Checkbox(description='Calculate Hardt Condition Chromaticity', value=False, indent=True, style=style)
     DX = widgets.FloatText(value=3.54, description='Dx', step=0.1)          # Dispersion at ES
@@ -55,7 +51,7 @@ def TheoryDashboard():
     Hardt = [hardt_chroma, S, QX, DX, DXp, alf, mues, muxr]                 #Listing all widgets which affect the Hardt condition
     col_hardt = widgets.VBox([h3, DX, DXp, alf, mues, muxr, hardt_chroma])          #Putting Hardt Condition widgets into the dashboard
     
-    #Hamiltonian Parameters
+    '====================== Hamiltonian Inputs ============================'
     h4 = widgets.HTML("<h2>Hamiltonian Parameters</h2>", layout=widgets.Layout(height='auto'))
     tdf = widgets.FileUpload(accept='.tfs', description='Twiss DataFrame', multiple=False, style=style, layout=widgets.Layout(width='auto'))
     ele_pos = widgets.Text(value='ES', description='Element',  disabled=False, layout=widgets.Layout(width='auto'))
@@ -64,110 +60,14 @@ def TheoryDashboard():
  
     col_ham = widgets.VBox([h4, ele_pos, tdf, h_tdf, Hamilton_err], layout=widgets.Layout(width='250px', align='center'))
     
-    '====================== OUTPUTS ============================'
-    #Plotting Steinbach
-    Stbach_out = widgets.Output()
-    with Stbach_out:
-        figS, axS = plt.subplots(figsize=(10,5))
-    
-    # Takes Steinbach calculation function from SX_Tools.py
-    particle_Q, particle_E, SLine, ALine = Steinbach(S.value,QX.value,QX_r.value,DPP.value,DQX.value,ex.value,Np.value)
-    particles, = axS.plot(particle_Q, particle_E, 'o')
-    sline, = axS.plot(SLine, ALine)
-    axS.set_ylabel('$A_n$ [$\sqrt{m}$]')
-    axS.set_xlabel(r'$Q_x$')
-    axS.set_title("Tune and amplitude of beam distribution compared to resonance")
-    axS.set_xlim(QX_r.value-0.003, QX_r.value+0.01)
-    axS.set_ylim(0, 0.005)
-
-    #Plotting Hamiltonian from ResTheory.py
-    Hamilton_out = widgets.Output()
-    with Hamilton_out:
-        figH, axH = plt.subplots(figsize=(9,8))
-    
-    '====================== CONDITIONS & OBSERVABLES ============================'
-    def rad(x):
-        'Defining radians'
-        theta = x * np.pi / 180
-        return theta
-
-    def HardtCondition(*args):
-        'Calculates Hardt Condition'
-        if hardt_chroma.value == True:
-            dmu = 360 - ((mues.value - muxr.value) / QX.value * 360)
-            dqx_hardt = (-S.value / (4 * np.pi)) * (DX.value * np.cos(rad(alf.value) - rad(dmu)) + DXp.value * np.sin(rad(alf.value) - rad(dmu)))
-            DQX.value = dqx_hardt
-            DQX.disabled = True
-        if hardt_chroma.value == False:
-            DQX.disabled = False
-
-    # callback functions
-    def updateSteinbach(change):
-        """Observes changes to parameters, redraws Steinbach line & updates plot"""
-        particle_Q, particle_E, SLine, ALine = Steinbach(S.value, QX.value, QX_r.value, DPP.value, DQX.value, ex.value, Np.value) 
-        particles.set_xdata(particle_Q), particles.set_ydata(particle_E)
-        sline.set_xdata(SLine), sline.set_ydata(ALine)
-        axS.set_xlim(xmin.value, xmax.value)
-        axS.set_ylim(ymin.value, ymax.value)
-        axS.set_title(f"{steinbach_title.value}")
-        figS.canvas.draw()
-        
-    def updateSpiralStep(change):
-        """Observes changes to parameters, calculates spiral step values"""
-        dR = 3/4 * S.value / np.cos(rad(phi.value)) * ES.value**2
-        dRp = 3/4 * S.value * np.tan(rad(phi.value)) / np.cos(rad(phi.value)) * ES.value**2
-        spir.value = round(dR, 3)
-        kick.value = round(dRp, 4)
-
-    def HamiltonPlot(change):
-        """Observes changes to parameters, redraws Hamiltonian & updates plot"""
-        import matplotlib.cm as cm
-        if tdf.data != []:
-            tdf_bytes = io.BytesIO( tdf.data[0] )                # Converts uploaded file into binary
-            TDF = io.TextIOWrapper(tdf_bytes, encoding='utf-8')  # Unwraps binary values
-            header, twiss_df = readtfs(TDF)                      # Extracts header information and dataframe.
-
-            axH.clear() 
-            xx, xpxp, hh = HamiltonianContour(twiss_df, QX.value, QX_r.value, ele_pos.value, Hamilton_err) #Calculates values to 
-
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                axH.contour(xx, xpxp, hh, 500, colors=[cm.get_cmap("coolwarm")(0)], linestyles='solid') #Edit this to change plot
-            axH.axvline(ES.value, color='black')
-            axH.set_xlabel('x [m]')
-            axH.set_ylabel('px')
-            axH.set_xlim(-ES.value-0.01, ES.value+0.01)
-            axH.set_ylim(-0.004, 0.004)
-            axH.set_title(f'Hamiltonian - nu={QX.value} ')
-
-            figH.canvas.draw()
-        
-    '====================== CREATES DASHBOARD FROM INPUTS & OUTPUTS ============================'
-    
-    [params.observe(updateSteinbach, 'value') for params in params_base]     #Observing changes in Steinbach baseline parameters
-    [spiral.observe(updateSpiralStep, 'value') for spiral in Spiral_Step]    #Observing changes in spiral step baseline parameters
-    [hardt.observe(HardtCondition, 'value') for hardt in Hardt]              #Observing changes in Hardt baseline parameters
-    
-    # If either of these change, update Hamiltonian Plot
-    tdf.observe(HamiltonPlot, 'data')
-    QX.observe(HamiltonPlot, 'value')
-    ES.observe(HamiltonPlot, 'value')
-    ele_pos.observe(HamiltonPlot, 'value')
-    
-    # matplotlib plotting settings
-    steinbach_title = widgets.Text(value='Tune and amplitude of beam distribution compared to resonance', description='Title', layout=widgets.Layout(width='auto'))
-    xmin, xmax = widgets.FloatText(value=1.66, description='Xmin', step=0.01, layout=widgets.Layout(width='200px')), widgets.FloatText(value=1.68, description='Xmax', step=0.01, layout=widgets.Layout(width='200px'))
-    ymin, ymax = widgets.FloatText(value=0, description='Ymin', step=0.01, layout=widgets.Layout(width='200px')), widgets.FloatText(value=0.005, description='Ymax', step=0.01, layout=widgets.Layout(width='200px'))
-    axes = [steinbach_title, xmin, xmax, ymin, ymax]
-    Axes = widgets.VBox([steinbach_title, widgets.HBox([xmin, xmax]), widgets.HBox([ymin, ymax])])
-    [axis.observe(updateSteinbach, 'value') for axis in axes]
-    
-    SteinbachOut = widgets.HBox([Stbach_out, Axes])    
+    '====================== Ouputs of Processes ============================'
+    SteinbachOut = Steinbach_Output(Steinbach_inputs, Spiral_Step, Hardt)
+    HamiltonOut = Hamiltonian_Output(tdf, QX, QX_r, ES, ele_pos, Hamilton_err)
         
     outtab = widgets.Tab()                           #Makes a tab of Steinbach & Hamiltonian Outputs
-    outtab.children = SteinbachOut, Hamilton_out
+    outtab.children = SteinbachOut, HamiltonOut
     outtab.set_title(0, "Steinbach"), outtab.set_title(1, "Hamiltonian")
 
-    '====================== DISPLAY DASHBOARD ============================'
+    '====================== Display Dashboard ============================'
     Dashboard = widgets.VBox([widgets.HBox([col_param, col_spiral, col_hardt, col_ham]), outtab]) 
     return(Dashboard)
