@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 from tools.helpers import *
 
+from ipywidgets import interactive, interact
+
 def Steinbach(S, QX, Q_r, dpp, dQX, ex, Np):
     '''
     Inputs
@@ -82,7 +84,7 @@ def Steinbach_Output(st_in, spiral_in, hardt_in):
         axS.set_xlim(xmin.value, xmax.value)
         axS.set_ylim(ymin.value, ymax.value)
         axS.set_title(f"{steinbach_title.value}")
-        figS.canvas.draw()
+        figS.canvas.draw_idle()
     
     # Plots initial default steinbach
     particle_Q, particle_E, SLine, ALine = Steinbach(S.value,QX.value,QX_r.value,DPP.value,DQX.value,ex.value,Np.value)
@@ -94,6 +96,7 @@ def Steinbach_Output(st_in, spiral_in, hardt_in):
     axS.set_title("Tune and amplitude of beam distribution compared to resonance")
     axS.set_xlim(QX_r.value-0.003, QX_r.value+0.01)
     axS.set_ylim(0, 0.005)
+    
      
     def updateSpiralStep(change):
         '''
