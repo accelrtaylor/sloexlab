@@ -113,7 +113,7 @@ def PhaseSpaceInputs(trackdata):
                 if Gradient.value == True:
                     cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", [Color1.value, Color2.value])
                     NormT = Norm(TurnMin.value, TurnMax.value)
-                    plt.colorbar(cm.ScalarMappable(norm=NormT, cmap=cmap))
+                    plt.colorbar(cm.ScalarMappable(norm=Norm, cmap=cmap))
                     if XPlot.value != "Turns" and YPlot.value != "Turns":
                         with tqdm_out:
                             for T in tqdm(T_arr):
@@ -121,6 +121,7 @@ def PhaseSpaceInputs(trackdata):
                                     axP.plot(data[coord[XPlot.value],  p, T],
                                              data[coord[YPlot.value] , p, T],
                                              '.', color=cmap(NormT(T)))
+                                    print('Loading....')
                     if XPlot.value == "Turns":
                         with tqdm_out:
                             for T in tqdm(T_arr):
@@ -139,7 +140,7 @@ def PhaseSpaceInputs(trackdata):
         
         plt.show()
         
-    PhaseSpaceDash = widgets.VBox([widgets.HBox([Inputs, widgets.VBox([TurnDisplay, err_out]), Buttons]), tqdm_out, phase_output])
+    PhaseSpaceDash = widgets.VBox([widgets.HBox([Inputs, widgets.VBox([TurnDisplay, err_out]), Buttons]), phase_output])
     
     return PhaseSpaceDash
 

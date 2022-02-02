@@ -39,16 +39,17 @@ def Visualiser():
         if form.value == 'PTC Track File':
             tracks = pd.read_csv(seq, delim_whitespace=True, names=['Number', 'Turn', 'X', 'PX', 'Y', 'PY', 'T', 'PT', 'S', 'E'], header = 6, skiprows=2)
         trackdata.append(Tracks)
-        with TuneOut:
-            display(trackdata)
     
             
     form.observe(data_type, 'value')
     uploader.observe(form_upload, 'data')
     
     '====================== Phase Space Plot ============================'
-    PhaseSpaceDash = PhaseSpaceInputs()
+    PhaseSpaceDash = PhaseSpaceInputs(trackdata)
     TuneOut = widgets.Output()
+    
+    with TuneOut:
+        display(trackdata)
     
     '====================== Display Dashboard ============================'
     vistab = widgets.Tab()                           #Makes a tab of Steinbach & Hamiltonian Outputs
