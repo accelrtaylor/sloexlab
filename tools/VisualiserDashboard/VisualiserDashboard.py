@@ -6,6 +6,7 @@ from tqdm.notebook import tqdm
 import io
 
 from tools.VisualiserDashboard.PhaseSpace import PhaseSpaceInputs
+from tools.VisualiserDashboard.TuneCalc import TuneDashboard
 
 def Visualiser():
     'Dashboard for producing and editing figures based on 6D tracking data'
@@ -46,14 +47,11 @@ def Visualiser():
     
     '====================== Phase Space Plot ============================'
     PhaseSpaceDash = PhaseSpaceInputs(trackdata)
-    TuneOut = widgets.Output()
-    
-    with TuneOut:
-        display(trackdata)
+    TuneDash = TuneDashboard(trackdata)
     
     '====================== Display Dashboard ============================'
     vistab = widgets.Tab()                           #Makes a tab of Steinbach & Hamiltonian Outputs
-    vistab.children = PhaseSpaceDash, TuneOut
+    vistab.children = PhaseSpaceDash, TuneDash
     vistab.set_title(0, "Coordinate Space"), vistab.set_title(1, "Tune Calculation")
     
     Dashboard = widgets.VBox([Upload, vistab])
