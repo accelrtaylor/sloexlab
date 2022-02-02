@@ -1,4 +1,4 @@
-#Functions written by P. Arrutia
+#ResTheory functions written by P. Arrutia
 
 import matplotlib.pyplot as plt
 import pandas as pd 
