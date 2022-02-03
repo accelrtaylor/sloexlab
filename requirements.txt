@@ -7,3 +7,4 @@ ipympl
 pandas
 tqdm
 jupyterlab
+PyNAFF

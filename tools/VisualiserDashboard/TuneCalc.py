@@ -2,7 +2,16 @@
 import os
 import numpy as np
 import ipywidgets as widgets
-import PyNAFF
+try:
+    import PyNAFF
+except:
+    os.chdir("/eos/user/r/retaylor/.local/lib/python3.8/site-packages")
+    import PyNAFF
+    os.chdir('/eos/home-r/retaylor/SWAN_projects/sloexlab/sloexlab')
+import webbrowser
+
+import base64
+
 
 from tqdm.notebook import tqdm
 
@@ -41,17 +50,36 @@ def TuneDashboard(Tracks):
     nparticles = widgets.BoundedIntText(value=100  , min=0, max=1E10, step=100, description='Particle no.')
 
     Calculate = widgets.Button(description='Calculate')
-    Download = widgets.Button(description='Download')
+    Download = widgets.Output() # Button(description='Download')
     Upload = widgets.FileUpload(description='Upload')
     
     TuneOut = widgets.Output()
     
-    TuneInputs = widgets.HBox([ widgets.VBox([WindowCalc, WindowStep, Coordinate])   , widgets.VBox([TurnMin, TurnMax, nparticles])    ,   widgets.VBox([Calculate, Download, Upload])       ])
+    TuneInputs = widgets.HBox([ widgets.VBox([WindowCalc, WindowStep, Coordinate])   , widgets.VBox([TurnMin, TurnMax, nparticles])    ,   widgets.VBox([Calculate, Upload, Download,])       ])
     
     def TuneCalc(change):
         with TuneOut:
-            Qx = tune_scroll(Tracks, nparticles.value, WindowStep.value, WindowCalc.value, Coordinate.value)
-        return Qx
+            qx = tune_scroll(Tracks, nparticles.value, WindowStep.value, WindowCalc.value, Coordinate.value)
+
+            filename = f'Tune_{Coordinate.value}_{WindowCalc.value}_T_{TurnMax.value}_P_{nparticles.value}.npy'
+            print(filename)
+            b64 = base64.b64encode(qx)
+            payload = b64.decode()
+            html_buttons = '''<html>
+                        <head>
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                        </head>
+                        <body>
+                        <a download="{filename}" href="data:text/csv;base64,{payload}" download>
+                        <button class="p-Widget jupyter-widgets jupyter-button widget-button mod-warning">Download File</button>
+                        </a>
+                        </body>
+                        </html>
+                        '''
+            html_button = html_buttons.format(payload=payload,filename=filename)
+            with Download:
+                display(widgets.HTML(html_button))
+
     
     Calculate.on_click(TuneCalc)
     
