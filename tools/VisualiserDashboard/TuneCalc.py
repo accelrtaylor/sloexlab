@@ -8,7 +8,6 @@ except:
     os.chdir("/eos/user/r/retaylor/.local/lib/python3.8/site-packages")
     import PyNAFF
     os.chdir('/eos/home-r/retaylor/SWAN_projects/sloexlab/sloexlab')
-import webbrowser
 
 import base64
 
