@@ -74,7 +74,7 @@ def TrackDashboard():
     
     '==================== MADX-PTC Set-up ============================='
     h2 = widgets.HTML("<h2>MADX Set-up</h2>")
-    programme = widgets.RadioButtons(options=['MADX-PTC', 'Maptrack'], description='Tracking Software:', style=style)
+    programme = widgets.RadioButtons(options=['MADX-PTC'], description='Tracking Software:', style=style)
     upload = widgets.FileUpload(accept='.seq', description='MADX .seq', multiple=False, style=style)
     sequence = widgets.Text(value='PIMMS', description='Seq name', layout=widgets.Layout(width='200px'))
     twissplot = widgets.Button(description="Plot Twiss")

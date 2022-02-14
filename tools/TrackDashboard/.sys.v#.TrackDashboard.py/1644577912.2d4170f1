@@ -5,6 +5,8 @@ import pandas as pd
 from tqdm.notebook import tqdm
 import io
 
+import base64
+
 from tools.helpers import *
 
 def TrackDashboard():
@@ -72,7 +74,7 @@ def TrackDashboard():
     
     '==================== MADX-PTC Set-up ============================='
     h2 = widgets.HTML("<h2>MADX Set-up</h2>")
-    programme = widgets.RadioButtons(options=['MADX-PTC', 'Maptrack'], description='Tracking Software:', style=style)
+    programme = widgets.RadioButtons(options=['MADX-PTC'], description='Tracking Software:', style=style)
     upload = widgets.FileUpload(accept='.seq', description='MADX .seq', multiple=False, style=style)
     sequence = widgets.Text(value='PIMMS', description='Seq name', layout=widgets.Layout(width='200px'))
     twissplot = widgets.Button(description="Plot Twiss")
@@ -111,8 +113,28 @@ def TrackDashboard():
                 madx.input('ptc_create_layout,model=2,method=6,nst=5, exact;')
                 madx.input(f'PTC_TWISS, icase=5, no=5, FILE="{sequence.value}_Twiss_sloexlab.tfs";')
                 madx.input('PTC_END;')
-                with twisssaveout:
-                    display(HTML(f'Saved "{sequence.value}_Twiss_sloexlab.tfs" to {os.getcwd()}'))
+
+                filename = f"{sequence.value}_Twiss_sloexlab.tfs"
+                
+                with open(filename, 'r') as TFS_Twiss:
+                    TFS = TFS_Twiss.read()
+
+                    b64 = base64.b64encode(TFS.encode())
+                    payload = b64.decode()
+                    html_buttons = '''<html>
+                                <head>
+                                <meta name="viewport" content="width=device-width, initial-scale=1">
+                                </head>
+                                <body>
+                                <a download="{filename}" href="data:text/csv;base64,{payload}" download>
+                                <button class="p-Widget jupyter-widgets jupyter-button widget-button mod-warning">Download File</button>
+                                </a>
+                                </body>
+                                </html>
+                                '''
+                    html_button = html_buttons.format(payload=payload,filename=filename)
+                    with twisssaveout:
+                        display(widgets.HTML(html_button))                    
 
             twisssave.on_click(twiss_save_button)
     
@@ -121,7 +143,7 @@ def TrackDashboard():
     twissout = widgets.Output()
     twisssaveout = widgets.Output()
     programme.observe(FileUploader, 'value')
-    prog = widgets.VBox([h2, programme, widgets.HBox([sequence, upload]), widgets.HBox([twissplot, twisssave]), twisssaveout])
+    prog = widgets.VBox([h2, programme, widgets.HBox([sequence, upload]), widgets.HBox([twissplot, widgets.VBox([twisssave, twisssaveout])])])
     upload.observe(MADX_Track, 'data')
     sequence.observe(MADX_Track, 'value')
     
@@ -132,6 +154,7 @@ def TrackDashboard():
     trackobs = widgets.Text(value='[#start,ES]', description='Observe at:')
     TRACK = widgets.Button(description='TRACK!')
     trackout = widgets.Output()
+    trackdownload = widgets.Output()
     
     Beams = make_beam_dist(Np.value, DPP.value,
               betx.value, bety.value,
@@ -153,12 +176,32 @@ def TrackDashboard():
                 madx.input(f'''ptc_track, turns={nturns.value}, element_by_element=True, file="{sequence.value}_Track_sloexlab.txt", ONETABLE=True, icase=5;
                 ptc_track_end;
                 ptc_end;''')
-                with trackout:
-                    print(f'Saving "{sequence.value}_Track_sloexlab.txtone" to {os.getcwd()}')
+                
+                filename = f"{sequence.value}_Track_sloexlab.txtone"
+                
+                with open(filename, 'r') as PTC_Track:
+                    PTC =  PTC_Track.read()
+
+                    b64 = base64.b64encode(PTC.encode())
+                    payload = b64.decode()
+                    html_buttons = '''<html>
+                                <head>
+                                <meta name="viewport" content="width=device-width, initial-scale=1">
+                                </head>
+                                <body>
+                                <a download="{filename}" href="data:text/csv;base64,{payload}" download>
+                                <button class="p-Widget jupyter-widgets jupyter-button widget-button mod-warning">Download File</button>
+                                </a>
+                                </body>
+                                </html>
+                                '''
+                    html_button = html_buttons.format(payload=payload,filename=filename)
+                    with trackdownload:
+                        display(widgets.HTML(html_button))                    
     
     with trackout:
         TRACK.on_click(PTCTrack)
-    trackwidgets = widgets.VBox([htrack, widgets.HBox([widgets.VBox([nturns, trackobs, TRACK]), trackout])])
+    trackwidgets = widgets.VBox([htrack, widgets.HBox([widgets.VBox([nturns, trackobs, widgets.HBox([TRACK, trackdownload])]), trackout])])
     
     Dashboard = widgets.VBox([widgets.HBox([PBeam, BeamOut]), widgets.HBox([prog, twissout]), trackwidgets])
     return(Dashboard)

@@ -29,13 +29,23 @@ def PhaseSpaceInputs(trackdata):
     with TurnDisplay:
         display(widgets.HBox([TurnNo, Color]))
     
-    PlotButton = widgets.Button(description='Plot', icon='fchart-scatter')
+    PlotButton = widgets.Button(description='Plot', icon='chart-scatter')
     AnimateButton = widgets.Button(description='Animate', icon='photo-video')
     
     err_out = widgets.Output()
     tqdm_out = widgets.Output()
     
-    Buttons = widgets.VBox([PlotButton, AnimateButton])
+    AnimateDisplay = widgets.Output()
+    Animate = widgets.HBox([AnimateButton, AnimateDisplay])
+    def animatebutton(change):
+        AnimateDisplay.clear_output()
+        Valid = widgets.Valid(value=False, description='')
+        with AnimateDisplay:
+            display(Valid)
+
+    AnimateButton.on_click(animatebutton)            
+    
+    Buttons = widgets.VBox([PlotButton, Animate])
     
     def InputType(check):
         TurnDisplay.clear_output()

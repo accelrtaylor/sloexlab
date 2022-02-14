@@ -6,6 +6,7 @@ from tqdm.notebook import tqdm
 import io
 
 from tools.VisualiserDashboard.PhaseSpace import PhaseSpaceInputs
+from tools.VisualiserDashboard.TuneCalc import TuneDashboard
 
 def Visualiser():
     'Dashboard for producing and editing figures based on 6D tracking data'
@@ -39,20 +40,18 @@ def Visualiser():
         if form.value == 'PTC Track File':
             tracks = pd.read_csv(seq, delim_whitespace=True, names=['Number', 'Turn', 'X', 'PX', 'Y', 'PY', 'T', 'PT', 'S', 'E'], header = 6, skiprows=2)
         trackdata.append(Tracks)
-    with TuneOut:
-        display(trackdata)
     
             
     form.observe(data_type, 'value')
     uploader.observe(form_upload, 'data')
     
     '====================== Phase Space Plot ============================'
-    PhaseSpaceDash = PhaseSpaceInputs()
-    TuneOut = widgets.Output()
+    PhaseSpaceDash = PhaseSpaceInputs(trackdata)
+    TuneDash = TuneDashboard(trackdata)
     
     '====================== Display Dashboard ============================'
     vistab = widgets.Tab()                           #Makes a tab of Steinbach & Hamiltonian Outputs
-    vistab.children = PhaseSpaceDash, TuneOut
+    vistab.children = PhaseSpaceDash, TuneDash
     vistab.set_title(0, "Coordinate Space"), vistab.set_title(1, "Tune Calculation")
     
     Dashboard = widgets.VBox([Upload, vistab])

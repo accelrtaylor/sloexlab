@@ -14,7 +14,7 @@ def Visualiser():
     '====================== Uploader Inputs ============================'
     htitle = widgets.HTML('<h2> Upload 6D Tracking Data </h2>')
     hdetails = widgets.HTML('Numpy of the format: X, Xp, Y, Yp, t, pt in a 6 x nparticles x nturns array')
-    form = widgets.Dropdown(options=['Numpy Array', 'PTC Track File', 'Pandas Dataframe'], description='File Type')
+    form = widgets.Dropdown(options=['Numpy Array'], description='File Type')
     uploader = widgets.FileUpload(accept='.npy', description='6D Track Results', layout=widgets.Layout(width='auto'))
     
     Upload = widgets.VBox([htitle, hdetails, widgets.HBox([widgets.VBox([widgets.HBox([form, uploader])])])])

@@ -35,7 +35,17 @@ def PhaseSpaceInputs(trackdata):
     err_out = widgets.Output()
     tqdm_out = widgets.Output()
     
-    Buttons = widgets.VBox([PlotButton, AnimateButton])
+    AnimateDisplay = widgets.Output()
+    Animate = widgets.HBox([AnimateButton, AnimateDisplay])
+    def animatebutton(change):
+        AnimateDisplay.clear_output()
+        Valid = widgets.Valid(value=False, description='')
+        with AnimateDisplay:
+            display(Valid)
+
+    AnimateButton.on_click(animatebutton)            
+    
+    Buttons = widgets.VBox([PlotButton, Animate])
     
     def InputType(check):
         TurnDisplay.clear_output()
@@ -113,7 +123,7 @@ def PhaseSpaceInputs(trackdata):
                 if Gradient.value == True:
                     cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", [Color1.value, Color2.value])
                     NormT = Norm(TurnMin.value, TurnMax.value)
-                    plt.colorbar(cm.ScalarMappable(norm=Norm, cmap=cmap))
+                    plt.colorbar(cm.ScalarMappable(norm=NormT, cmap=cmap))
                     if XPlot.value != "Turns" and YPlot.value != "Turns":
                         with tqdm_out:
                             for T in tqdm(T_arr):
