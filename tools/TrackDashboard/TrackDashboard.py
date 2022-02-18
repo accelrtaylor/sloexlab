@@ -34,6 +34,8 @@ def TrackDashboard():
     dpy = widgets.FloatText(value=0, description="Disp y'", step=0.01, layout=widgets.Layout(width='auto'))
     ex = widgets.FloatText(value=1E-6, description='ex', step=1E-6, layout=widgets.Layout(width='auto'))
     ey = widgets.FloatText(value=1E-6, description='ey', step=1E-6, layout=widgets.Layout(width='auto'))
+    
+    BeamGenPlot = widgets.Button(description='Plot')
 
     beam_params = [Np, DPP, betx, alfx, dx, dpx, ex, bety, alfy, dy, dpy, ey]
     beam = widgets.VBox([h1, m, p, Np, DPP])
@@ -43,12 +45,12 @@ def TrackDashboard():
     
     def BeamGen(change):
         'Observes if any changes were made to initial beam parameters and updates plot'
-        plt.clf()
         Beam = make_beam_dist(Np.value, DPP.value,
                               betx.value, bety.value,
                               alfx.value, alfy.value,
                               dx.value, dy.value, dpx.value, dpy.value,
                               ex.value, ey.value)
+        
         ax1 = figure.add_subplot(1,3,1)
         ax2 = figure.add_subplot(1,3,2)
         ax3 = figure.add_subplot(1,3,3)
@@ -68,9 +70,12 @@ def TrackDashboard():
         figure = plt.figure(figsize=(11, 3), constrained_layout=True)
         figure.canvas.header_visible = False
         figure.canvas.toolbar_position = 'bottom'
-        BeamGen(Np.value)
+        def BeamGenPlotClick(b):
+            figure.clf()
+            BeamGen(Np.value)
+        BeamGenPlot.on_click(BeamGenPlotClick)
     
-    [beamparams.observe(BeamGen, 'value') for beamparams in beam_params]
+    #[beamparams.observe(BeamGen, 'value') for beamparams in beam_params]
     
     '==================== MADX-PTC Set-up ============================='
     h2 = widgets.HTML("<h2>MADX Set-up</h2>")
@@ -155,14 +160,13 @@ def TrackDashboard():
     TRACK = widgets.Button(description='TRACK!')
     trackout = widgets.Output()
     trackdownload = widgets.Output()
-    
-    Beams = make_beam_dist(Np.value, DPP.value,
-              betx.value, bety.value,
-              alfx.value, alfy.value,
-              dx.value, dy.value, dpx.value, dpy.value,
-              ex.value, ey.value)
 
     def PTCTrack(b):
+        Beams = make_beam_dist(Np.value, DPP.value,
+                  betx.value, bety.value,
+                  alfx.value, alfy.value,
+                  dx.value, dy.value, dpx.value, dpy.value,
+                  ex.value, ey.value)
         with trackout:
             for i in tqdm(range(1), desc='PTC Track Time'):
                 madx.input('ptc_create_universe;')
@@ -203,5 +207,5 @@ def TrackDashboard():
         TRACK.on_click(PTCTrack)
     trackwidgets = widgets.VBox([htrack, widgets.HBox([widgets.VBox([nturns, trackobs, widgets.HBox([TRACK, trackdownload])]), trackout])])
     
-    Dashboard = widgets.VBox([widgets.HBox([PBeam, BeamOut]), widgets.HBox([prog, twissout]), trackwidgets])
+    Dashboard = widgets.VBox([widgets.HBox([PBeam, widgets.VBox([BeamGenPlot, BeamOut])]), widgets.HBox([prog, twissout]), trackwidgets])
     return(Dashboard)
