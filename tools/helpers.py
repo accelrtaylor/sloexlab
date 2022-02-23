@@ -66,7 +66,7 @@ def plot_twiss(fig, twiss, title=''):
     axnames.spines['top'].set_visible(False)
     axnames.spines['left'].set_visible(False)
     axnames.spines['right'].set_visible(False)
-    ax1._shared_x_axes.join(ax1, axnames)
+    ax1.get_shared_x_axes().join(ax1, axnames)
 
     ticks, ticks_labels = list(), list()
     for keyword in ['quadrupole', 'rbend', 'sbend']:
