@@ -10,7 +10,7 @@ def Steinbach(S, QX, Q_r, dpp, dQX, ex, Np):
     '''
     Inputs
     -------
-        S   : Sextupole strength
+        S   : Sextupole strength
         QX  : Particle horizontal tune
         Q_r : Resonance horizontal tune
         dQX : Beam chromaticity
@@ -41,7 +41,7 @@ def Steinbach(S, QX, Q_r, dpp, dQX, ex, Np):
 
     return([QX + DPP*dQX, An, Q_r+Q_range, A_stopb ])
 
-def Steinbach_Output(st_in, spiral_in, hardt_in):
+def Steinbach_Output(st_in, st_out, spiral_in, hardt_in):
     '''
     Inputs
     -------
@@ -64,10 +64,10 @@ def Steinbach_Output(st_in, spiral_in, hardt_in):
     hardt_chroma, S, QX, DX, DXp, alf, mues, muxr = hardt_in
     
     # Defining output widget
-    Stbach_out = widgets.Output()
-    with Stbach_out:
+    with st_out:
         figS, axS = plt.subplots(figsize=(10,5))
         figS.canvas.header_visible = False
+        plt.show()
         
     # callback functions
     def updateSteinbach(change):
@@ -79,24 +79,25 @@ def Steinbach_Output(st_in, spiral_in, hardt_in):
         If st_in values change, redraws Steinbach line & updates plot
         '''
         particle_Q, particle_E, SLine, ALine = Steinbach(S.value, QX.value, QX_r.value, DPP.value, DQX.value, ex.value, Np.value) 
-        particles.set_xdata(particle_Q), particles.set_ydata(particle_E)
-        sline.set_xdata(SLine), sline.set_ydata(ALine)
-        axS.set_xlim(xmin.value, xmax.value)
-        axS.set_ylim(ymin.value, ymax.value)
-        axS.set_title(f"{steinbach_title.value}")
-        figS.canvas.draw()
-        plt.show()
+        with st_out:
+            particles.set_xdata(particle_Q), particles.set_ydata(particle_E)
+            sline.set_xdata(SLine), sline.set_ydata(ALine)
+            axS.set_xlim(xmin.value, xmax.value)
+            axS.set_ylim(ymin.value, ymax.value)
+            axS.set_title(f"{steinbach_title.value}")
+            figS.canvas.draw_idle()
     
     # Plots initial default steinbach
     particle_Q, particle_E, SLine, ALine = Steinbach(S.value,QX.value,QX_r.value,DPP.value,DQX.value,ex.value,Np.value)
-    particles, = axS.plot(particle_Q, particle_E, 'o')
-    sline, = axS.plot(SLine, ALine)
+    with st_out:
+        particles, = axS.plot(particle_Q, particle_E, 'o')
+        sline, = axS.plot(SLine, ALine)
 
-    axS.set_ylabel('$A_n$ [$\sqrt{m}$]')
-    axS.set_xlabel(r'$Q_x$')
-    axS.set_title("Tune and amplitude of beam distribution compared to resonance")
-    axS.set_xlim(QX_r.value-0.003, QX_r.value+0.01)
-    axS.set_ylim(0, 0.005)
+        axS.set_ylabel('$A_n$ [$\sqrt{m}$]')
+        axS.set_xlabel(r'$Q_x$')
+        axS.set_title("Tune and amplitude of beam distribution compared to resonance")
+        axS.set_xlim(QX_r.value-0.003, QX_r.value+0.01)
+        axS.set_ylim(0, 0.005)
     
      
     def updateSpiralStep(change):
@@ -130,7 +131,6 @@ def Steinbach_Output(st_in, spiral_in, hardt_in):
       
     # List of widgets to observe with functions
     [params.observe(updateSteinbach, 'value') for params in st_in]           #Observing changes in Steinbach baseline parameters
-    interact(updateSteinbach);
     [spiral.observe(updateSpiralStep, 'value') for spiral in spiral_in]    #Observing changes in spiral step baseline parameters
     [hardt.observe(HardtCondition, 'value') for hardt in hardt_in]              #Observing changes in Hardt baseline parameters
     
@@ -147,5 +147,4 @@ def Steinbach_Output(st_in, spiral_in, hardt_in):
     Axes = widgets.VBox([steinbach_title, widgets.HBox([xmin, xmax]), widgets.HBox([ymin, ymax])])
     [axis.observe(updateSteinbach, 'value') for axis in axes]
     
-    SteinbachOut = widgets.HBox([Stbach_out, Axes])
-    return SteinbachOut
+    return Axes

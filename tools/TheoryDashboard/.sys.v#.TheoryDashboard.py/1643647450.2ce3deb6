@@ -5,13 +5,13 @@ import pandas as pd
 
 from tools.helpers import *
 
-from tools.Steinbach import *
-from tools.Hamiltonian import *
+from tools.TheoryDashboard.Steinbach import *
+from tools.TheoryDashboard.Hamiltonian import *
 
 def TheoryDashboard():
     '''
     Dashboard requesting inputs which affect calculations of Steinbach & Kobayashi-Hamiltonian diagrams
-    Outputs two tabs: from tools.Steinbach steinbach schematic and tools.Hamiltonian
+    Two outputs : from tools.Steinbach and tools.Hamiltonian
     '''
 
     style = {'description_width': 'initial'}
@@ -51,7 +51,7 @@ def TheoryDashboard():
     Hardt = [hardt_chroma, S, QX, DX, DXp, alf, mues, muxr]                 #Listing all widgets which affect the Hardt condition
     col_hardt = widgets.VBox([h3, DX, DXp, alf, mues, muxr, hardt_chroma])          #Putting Hardt Condition widgets into the dashboard
     
-    #Hamiltonian Parameters
+    '====================== Hamiltonian Inputs ============================'
     h4 = widgets.HTML("<h2>Hamiltonian Parameters</h2>", layout=widgets.Layout(height='auto'))
     tdf = widgets.FileUpload(accept='.tfs', description='Twiss DataFrame', multiple=False, style=style, layout=widgets.Layout(width='auto'))
     ele_pos = widgets.Text(value='ES', description='Element',  disabled=False, layout=widgets.Layout(width='auto'))
@@ -60,15 +60,14 @@ def TheoryDashboard():
  
     col_ham = widgets.VBox([h4, ele_pos, tdf, h_tdf, Hamilton_err], layout=widgets.Layout(width='250px', align='center'))
     
-    '====================== PROCESSES ============================'
+    '====================== Ouputs of Processes ============================'
     SteinbachOut = Steinbach_Output(Steinbach_inputs, Spiral_Step, Hardt)
     HamiltonOut = Hamiltonian_Output(tdf, QX, QX_r, ES, ele_pos, Hamilton_err)
         
-    '====================== OUTPUTS ============================'
     outtab = widgets.Tab()                           #Makes a tab of Steinbach & Hamiltonian Outputs
     outtab.children = SteinbachOut, HamiltonOut
     outtab.set_title(0, "Steinbach"), outtab.set_title(1, "Hamiltonian")
 
-    '====================== DISPLAY DASHBOARD ============================'
+    '====================== Display Dashboard ============================'
     Dashboard = widgets.VBox([widgets.HBox([col_param, col_spiral, col_hardt, col_ham]), outtab]) 
     return(Dashboard)

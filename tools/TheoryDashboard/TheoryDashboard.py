@@ -25,6 +25,8 @@ def TheoryDashboard():
     ex = widgets.FloatText(value=1E-6, description='ex rms', step=1E-6)     # RMS Normalised emittance
     DQX = widgets.FloatText(value=-4, description='DQX', step=0.1)          # Chromaticity
     DPP = widgets.FloatText(value=1E-4, description='dpp', step=1E-4)       # Particle momentum spread
+    
+    Stbach_out = widgets.Output()
 
     Steinbach_inputs = [S, QX, QX_r, DPP, DQX, ex, Np]
     col_param = widgets.VBox([h1, widgets.VBox(Steinbach_inputs)])                          #Putting widgets into dashboard
@@ -61,7 +63,8 @@ def TheoryDashboard():
     col_ham = widgets.VBox([h4, ele_pos, tdf, h_tdf, Hamilton_err], layout=widgets.Layout(width='250px', align='center'))
     
     '====================== Ouputs of Processes ============================'
-    SteinbachOut = Steinbach_Output(Steinbach_inputs, Spiral_Step, Hardt)
+    StAxes = Steinbach_Output(Steinbach_inputs, Stbach_out, Spiral_Step, Hardt)
+    SteinbachOut = widgets.HBox([Stbach_out, StAxes])
     HamiltonOut = Hamiltonian_Output(tdf, QX, QX_r, ES, ele_pos, Hamilton_err)
         
     outtab = widgets.Tab()                           #Makes a tab of Steinbach & Hamiltonian Outputs

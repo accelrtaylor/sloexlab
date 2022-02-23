@@ -70,6 +70,7 @@ def TrackDashboard():
         figure = plt.figure(figsize=(11, 3), constrained_layout=True)
         figure.canvas.header_visible = False
         figure.canvas.toolbar_position = 'bottom'
+        plt.show()
         def BeamGenPlotClick(b):
             figure.clf()
             BeamGen(Np.value)

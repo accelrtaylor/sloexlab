@@ -84,8 +84,7 @@ def Steinbach_Output(st_in, spiral_in, hardt_in):
         axS.set_xlim(xmin.value, xmax.value)
         axS.set_ylim(ymin.value, ymax.value)
         axS.set_title(f"{steinbach_title.value}")
-        figS.canvas.draw()
-        plt.show()
+        figS.canvas.draw_idle()
     
     # Plots initial default steinbach
     particle_Q, particle_E, SLine, ALine = Steinbach(S.value,QX.value,QX_r.value,DPP.value,DQX.value,ex.value,Np.value)
@@ -130,7 +129,6 @@ def Steinbach_Output(st_in, spiral_in, hardt_in):
       
     # List of widgets to observe with functions
     [params.observe(updateSteinbach, 'value') for params in st_in]           #Observing changes in Steinbach baseline parameters
-    interact(updateSteinbach);
     [spiral.observe(updateSpiralStep, 'value') for spiral in spiral_in]    #Observing changes in spiral step baseline parameters
     [hardt.observe(HardtCondition, 'value') for hardt in hardt_in]              #Observing changes in Hardt baseline parameters
     

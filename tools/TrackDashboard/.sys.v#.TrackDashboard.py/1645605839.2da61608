@@ -41,7 +41,7 @@ def TrackDashboard():
     beam = widgets.VBox([h1, m, p, Np, DPP])
     beam_x = widgets.VBox([betx, alfx, dx, dpx, ex])
     beam_y = widgets.VBox([bety, alfy, dy, dpy, ey])
-    PBeam = widgets.VBox([beam, widgets.HBox([beam_x, beam_y]), BeamGenPlot], layout=widgets.Layout(width='350px'))
+    PBeam = widgets.VBox([beam, widgets.HBox([beam_x, beam_y])], layout=widgets.Layout(width='350px'))
     
     def BeamGen(change):
         'Observes if any changes were made to initial beam parameters and updates plot'
@@ -70,6 +70,7 @@ def TrackDashboard():
         figure = plt.figure(figsize=(11, 3), constrained_layout=True)
         figure.canvas.header_visible = False
         figure.canvas.toolbar_position = 'bottom'
+        plt.show()
         def BeamGenPlotClick(b):
             figure.clf()
             BeamGen(Np.value)
@@ -160,14 +161,13 @@ def TrackDashboard():
     TRACK = widgets.Button(description='TRACK!')
     trackout = widgets.Output()
     trackdownload = widgets.Output()
-    
-    Beams = make_beam_dist(Np.value, DPP.value,
-              betx.value, bety.value,
-              alfx.value, alfy.value,
-              dx.value, dy.value, dpx.value, dpy.value,
-              ex.value, ey.value)
 
     def PTCTrack(b):
+        Beams = make_beam_dist(Np.value, DPP.value,
+                  betx.value, bety.value,
+                  alfx.value, alfy.value,
+                  dx.value, dy.value, dpx.value, dpy.value,
+                  ex.value, ey.value)
         with trackout:
             for i in tqdm(range(1), desc='PTC Track Time'):
                 madx.input('ptc_create_universe;')
@@ -208,5 +208,5 @@ def TrackDashboard():
         TRACK.on_click(PTCTrack)
     trackwidgets = widgets.VBox([htrack, widgets.HBox([widgets.VBox([nturns, trackobs, widgets.HBox([TRACK, trackdownload])]), trackout])])
     
-    Dashboard = widgets.VBox([widgets.HBox([PBeam, BeamOut]), widgets.HBox([prog, twissout]), trackwidgets])
+    Dashboard = widgets.VBox([widgets.HBox([PBeam, widgets.VBox([BeamGenPlot, BeamOut])]), widgets.HBox([prog, twissout]), trackwidgets])
     return(Dashboard)

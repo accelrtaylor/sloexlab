@@ -30,6 +30,7 @@ def Hamiltonian_Output(tdf, QX, QX_r, ES, ele_pos, Hamilton_err):
     with Hamilton_out:
         figH, axH = plt.subplots(figsize=(9,8))
         figH.canvas.header_visible = False
+        plt.show()
         
     def HamiltonPlot(change):
         '''
