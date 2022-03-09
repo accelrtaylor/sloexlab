@@ -59,27 +59,31 @@ def TuneDashboard(Tracks):
     def TuneCalc(change):
         with TuneOut:
             qx = tune_scroll(Tracks, nparticles.value, WindowStep.value, WindowCalc.value, Coordinate.value)
-
             filename = f'Tune_{Coordinate.value}_{WindowCalc.value}_T_{TurnMax.value}_P_{nparticles.value}.npy'
-            print(filename)
-            b64 = base64.b64encode(qx)
-            payload = b64.decode()
-            html_buttons = '''<html>
-                        <head>
-                        <meta name="viewport" content="width=device-width, initial-scale=1">
-                        </head>
-                        <body>
-                        <a download="{filename}" href="data:text/csv;base64,{payload}" download>
-                        <button class="p-Widget jupyter-widgets jupyter-button widget-button mod-warning">Download File</button>
-                        </a>
-                        </body>
-                        </html>
-                        '''
-            html_button = html_buttons.format(payload=payload,filename=filename)
+            
+            QX = np.save(filename, qx)
+            
+            with open(filename, mode='rb') as file: # b is important -> binary
+                QX_file = file.read()
+           
+                b64 = base64.b64encode(QX_file)
+                payload = b64.decode()
+                
+                html_buttons = '''<html>
+                            <head>
+                            <meta name="viewport" content="width=device-width, initial-scale=1">
+                            </head>
+                            <body>
+                            <a download="{filename}" href="data:text/csv;base64,{payload}" download>
+                            <button class="p-Widget jupyter-widgets jupyter-button widget-button mod-warning">Download File</button>
+                            </a>
+                            </body>
+                            </html>
+                            '''
+                html_button = html_buttons.format(payload=payload,filename=filename)
             with Download:
                 display(widgets.HTML(html_button))
 
-    
     Calculate.on_click(TuneCalc)
     
     
