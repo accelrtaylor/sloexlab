@@ -10,9 +10,9 @@ except:
     os.chdir('/eos/home-r/retaylor/SWAN_projects/sloexlab/sloexlab')
 
 import base64
-
-
 from tqdm.notebook import tqdm
+
+from tools.VisualiserDashboard.TunePlot import TunePlotDash
 
 def tune_scroll(Tracks, n_particles, t_step, Q_step, param='X'):
     ''' 
@@ -43,23 +43,27 @@ def TuneDashboard(Tracks):
     WindowCalc = widgets.BoundedIntText(value=128, min=2**0, max=2**15, step=64, description='Window Calc')
     WindowStep = widgets.BoundedIntText(value=10,  min=1, max=2**15, step=1, description='Window Step')
     Coordinate = widgets.ToggleButtons(options=['X', 'Y'], value='X',  description = 'Coordinate', layout=widgets.Layout(width='auto'))
-
-    TurnMin = widgets.BoundedIntText(value=0  , min=0, max=1E10, step=100, description='Turn Min')
-    TurnMax = widgets.BoundedIntText(value=100, min=0, max=1E10, step=100, description='Turn Max')
     nparticles = widgets.BoundedIntText(value=100  , min=0, max=1E10, step=100, description='Particle no.')
 
     Calculate = widgets.Button(description='Calculate')
     Download = widgets.Output() # Button(description='Download')
+    PlotOutput = widgets.Output()
     Upload = widgets.FileUpload(description='Upload')
+    Plot = widgets.Button(description='Plot')
     
     TuneOut = widgets.Output()
     
-    TuneInputs = widgets.HBox([ widgets.VBox([WindowCalc, WindowStep, Coordinate])   , widgets.VBox([TurnMin, TurnMax, nparticles])    ,   widgets.VBox([Calculate, Upload, Download,])       ])
+    TuneInputs = widgets.HBox([ widgets.VBox([WindowCalc, WindowStep, nparticles, Coordinate]), widgets.VBox([widgets.HBox([Calculate, Download]), Upload, PlotOutput])       ])
+    
+    TunePlotOut = widgets.Output()
+    Tunes = []
     
     def TuneCalc(change):
+        TuneOut.clear_output()
         with TuneOut:
             qx = tune_scroll(Tracks, nparticles.value, WindowStep.value, WindowCalc.value, Coordinate.value)
-            filename = f'Tune_{Coordinate.value}_{WindowCalc.value}_T_{TurnMax.value}_P_{nparticles.value}.npy'
+            Tunes.append(qx)
+            filename = f'Tune_{Coordinate.value}_{WindowCalc.value}_T_{np.max(qx[1,:,:])}_P_{nparticles.value}.npy'
             
             QX = np.save(filename, qx)
             
@@ -82,10 +86,20 @@ def TuneDashboard(Tracks):
                             '''
                 html_button = html_buttons.format(payload=payload,filename=filename)
             with Download:
+                Download.clear_output()
                 display(widgets.HTML(html_button))
+            with PlotOutput:
+                PlotOutput.clear_output()
+                display(Plot)
+                
+            Plot.on_click(TunePlotting)
 
     Calculate.on_click(TuneCalc)
     
+    def TunePlotting(change):
+        TunePlotOut.clear_output()
+        with TunePlotOut:
+            display(TunePlotDash(Tunes, Tracks))
     
-    TuneDash = widgets.VBox([TuneInputs, TuneOut])
+    TuneDash = widgets.VBox([TuneInputs, TuneOut, TunePlotOut])
     return TuneDash
