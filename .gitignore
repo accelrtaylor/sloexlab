@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class 
 .sys*.ipynb
+*_Track_sloexlab.*
+*.npy
 
 # C extensions
 *.so
