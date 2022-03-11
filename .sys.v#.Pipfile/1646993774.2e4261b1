@@ -4,16 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy
-matplotlib
-voila
-ipywidgets
-cpymad
-ipympl
-pandas
-tqdm
-jupyterlab
-PyNAFF
 
 [requires] 
 python_version = "3.8"
