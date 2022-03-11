@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+mkdocs-material = "==8.0.2"
 
 [requires] 
 python_version = "3.8"
