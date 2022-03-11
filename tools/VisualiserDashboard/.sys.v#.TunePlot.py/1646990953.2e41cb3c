@@ -28,13 +28,13 @@ def TuneOneParticle(tunes, trackdata):
     
     tuneparticle = widgets.Output()
     
-    Xmin = np.min(Tunes[0,:,:][Tunes[0,:,:] != 0])
-    Xmax = np.max(Tunes[0,:,:])
-    Qmin = np.min(Tunes[1,:,:][Tunes[0,:,:] != 0])
-    Qmax = np.max(Tunes[1,:,:])
+    Xmin = np.min(Tracks[0,:,:][Tracks[0,:,:] != 0])
+    Xmax = np.max(Tracks[0,:,:])
+    Qmin = np.min(Tunes[0,:,:][Tunes[0,:,:] != 0])
+    Qmax = np.max(Tunes[0,:,:])
     
-    qmin = widgets.FloatText(value=Qmin, description='Tune min', step=1, layout=widgets.Layout(width='200px'))
-    qmax = widgets.FloatText(value=Qmax, description='Tune max', step=1, layout=widgets.Layout(width='200px'))
+    qmin = widgets.FloatText(value=Qmin, description='Tune min', step=0.01, layout=widgets.Layout(width='200px'))
+    qmax = widgets.FloatText(value=Qmax, description='Tune max', step=0.01, layout=widgets.Layout(width='200px'))
     xmin = widgets.FloatText(value=Xmin, description='X min', step=0.01, layout=widgets.Layout(width='200px'))
     xmax = widgets.FloatText(value=Xmax, description='X max', step=0.01, layout=widgets.Layout(width='200px'))
     num_p = widgets.BoundedIntText(value=0  , min=0, max=1E10, step=1, description='Particle', layout=widgets.Layout(width='auto'))
@@ -54,7 +54,7 @@ def TuneOneParticle(tunes, trackdata):
         ax2 = ax1.twinx()
         ax2.set_ylabel('X [m]', color='orange')
         ax2.plot(Tracks[0,num_p.value,:], '.', color='orange')
-        ax2.set_ylim(xmin.value - xmin.value/100, xmax.value + xmax.value/100)
+        ax2.set_ylim(xmin.value - xmin.value/1000, xmax.value + xmax.value/1000)
         
 
         fig.tight_layout()
@@ -64,12 +64,11 @@ def TuneOneParticle(tunes, trackdata):
         with tuneparticle:
 
             ax1.plot(Tunes[1,num_p.value,:], Tunes[0,num_p.value,:], 'g.')
-            
-            ax1.set_ylim(xmin.value - xmin.value/100, xmax.value + xmax.value/100)
-            ax1.set_xlim(qmin.value, qmax.value)
+            ax1.set_ylim(qmin.value, qmax.value)
 
             ax2.plot(Tracks[0,num_p.value,:], '.', color='orange')
-
+            ax2.set_ylim(xmin.value - xmin.value/1000, xmax.value + xmax.value/1000)
+            
     
     oneplot.on_click(tuneoneplot)
 

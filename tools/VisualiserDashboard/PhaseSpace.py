@@ -126,6 +126,7 @@ def PhaseSpaceInputs(trackdata):
                     plt.colorbar(cm.ScalarMappable(norm=NormT, cmap=cmap))
                     if XPlot.value != "Turns" and YPlot.value != "Turns":
                         with tqdm_out:
+                            tqdm_out.clear_output()
                             for T in tqdm(T_arr):
                                 for p in range(np.shape(data)[1]):
                                     axP.plot(data[coord[XPlot.value],  p, T],
@@ -133,12 +134,14 @@ def PhaseSpaceInputs(trackdata):
                                              '.', color=cmap(NormT(T)))
                     if XPlot.value == "Turns":
                         with tqdm_out:
+                            tqdm_out.clear_output()
                             for T in tqdm(T_arr):
                                 for p in range(np.shape(data)[1]):
                                     axP.plot(T, data[coord[YPlot.value], p, T],
                                             '.', color=cmap(NormT(T)))
                     if YPlot.value == "Turns":
                         with tqdm_out:
+                            tqdm_out.clear_output()
                             for T in tqdm(T_arr):
                                 for p in range(np.shape(data)[1]):
                                     axP.plot(data[coord[XPlot.value], p, T], T,

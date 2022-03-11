@@ -58,6 +58,7 @@ def TuneOneParticle(tunes, trackdata):
         
 
         fig.tight_layout()
+        plt.plot()
     
     def tuneoneplot(b):
         ax1.clear(), ax2.clear()

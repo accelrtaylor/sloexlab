@@ -19,7 +19,7 @@ def TrackDashboard():
     '==================== Input Beam ============================='
     #Input parameters
     h1 = widgets.HTML("<h2>Initial Beam Parameters</h2>")
-    Np = widgets.IntText(value=100, description='Np', step=100, layout=widgets.Layout(width='auto'))
+    Np = widgets.BoundedIntText(value=100, description='Np', step=100, min=1, layout=widgets.Layout(width='auto'))
     DPP = widgets.FloatText(value=1E-3, description='dpp', step=1E-4, layout=widgets.Layout(width='auto'))
     m = widgets.FloatText(value=11.17467, description='m [GeV]', step=1E-4, layout=widgets.Layout(width='auto'))
     p = widgets.FloatText(value=0.951303*12, description='p [GeV]', step=1E-4, layout=widgets.Layout(width='auto'))
@@ -201,7 +201,7 @@ def TrackDashboard():
                     ES_pddata = pddata[pddata.S == pddata.S.unique()[1]] #Change this for custom element measurement
                     pdtoarr = ES_pddata.drop(['Number', 'Turn', 'S', 'E'], axis=1)
                     arr = np.array(pdtoarr)
-                    arr_shape = np.reshape(arr, (Np.value, nturns.value, 6))
+                    arr_shape = np.reshape(arr, (int(Np.value), int(nturns.value), 6))
                     arr_swap = np.swapaxes(arr_shape, 0, 1)
                     data_arr  = np.swapaxes(arr_swap, 0, 2)
                     

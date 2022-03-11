@@ -159,6 +159,7 @@ def TrackDashboard():
     nturns = widgets.FloatText(value=1000, description='No. Turns')
     trackobs = widgets.Text(value='[#start,ES]', description='Observe at:')
     TRACK = widgets.Button(description='TRACK!')
+    DownloadAs = widgets.RadioButtons(options=['PTC Track (.txt)', 'Pandas (.csv)', 'Numpy Array (.npy)'])
     trackout = widgets.Output()
     trackdownload = widgets.Output()
 
@@ -181,13 +182,44 @@ def TrackDashboard():
                 madx.input(f'''ptc_track, turns={nturns.value}, element_by_element=True, file="{sequence.value}_Track_sloexlab.txt", ONETABLE=True, icase=5;
                 ptc_track_end;
                 ptc_end;''')
-                
-                filename = f"{sequence.value}_Track_sloexlab.txtone"
-                
-                with open(filename, 'r') as PTC_Track:
-                    PTC =  PTC_Track.read()
+                with trackdownload:
+                    trackdownload.clear_output()
+                    print('Converting file....')
+                if DownloadAs.value == 'PTC Track (.txt)':
+                    filename =f"{sequence.value}_Track_sloexlab.txtone"
+                    readtype = 'r'
+                if DownloadAs.value == 'Pandas (.csv)':
+                    pddata = pd.read_csv(f"{sequence.value}_Track_sloexlab.txtone", delim_whitespace=True, names=['Number', 'Turn', 'X', 'PX', 'Y', 'PY', 'T', 'PT', 'S', 'E'], header = 6, skiprows=2)
+                    pddata = pddata[pddata.Number != '#segment'].astype(float)
+                    filename = f"{sequence.value}_Track_sloexlab.csv"
+                    pddata.to_csv(filename)
+                    readtype = 'r'
+                if DownloadAs.value == 'Numpy Array (.npy)':
+                    pddata = pd.read_csv(f"{sequence.value}_Track_sloexlab.txtone", delim_whitespace=True, names=['Number',  'Turn', 'X', 'PX', 'Y', 'PY', 'T', 'PT', 'S', 'E'], header = 6, skiprows=2)
+                    pddata = pddata[pddata.Number != '#segment'].astype(float)
 
-                    b64 = base64.b64encode(PTC.encode())
+                    ES_pddata = pddata[pddata.S == pddata.S.unique()[1]] #Change this for custom element measurement
+                    pdtoarr = ES_pddata.drop(['Number', 'Turn', 'S', 'E'], axis=1)
+                    arr = np.array(pdtoarr)
+                    arr_shape = np.reshape(arr, (Np.value, nturns.value, 6))
+                    arr_swap = np.swapaxes(arr_shape, 0, 1)
+                    data_arr  = np.swapaxes(arr_swap, 0, 2)
+                    
+                    filename = f"{sequence.value}_Track_sloexlab.npy"
+                    np.save(filename, data_arr)
+                    readtype = 'rb'
+                
+                with trackdownload:
+                    trackdownload.clear_output()
+                    print('Downloading....')
+                    
+                with open(filename, readtype) as PTC_Track:
+                    PTC = PTC_Track.read()
+
+                    if DownloadAs.value == 'PTC Track (.txt)' or DownloadAs.value == 'Pandas (.csv)':
+                        b64 = base64.b64encode(PTC.encode())
+                    if DownloadAs.value == 'Numpy Array (.npy)':
+                        b64 = base64.b64encode(PTC)
                     payload = b64.decode()
                     html_buttons = '''<html>
                                 <head>
@@ -202,11 +234,12 @@ def TrackDashboard():
                                 '''
                     html_button = html_buttons.format(payload=payload,filename=filename)
                     with trackdownload:
+                        trackdownload.clear_output()
                         display(widgets.HTML(html_button))                    
     
     with trackout:
         TRACK.on_click(PTCTrack)
-    trackwidgets = widgets.VBox([htrack, widgets.HBox([widgets.VBox([nturns, trackobs, widgets.HBox([TRACK, trackdownload])]), trackout])])
+    trackwidgets = widgets.VBox([htrack, widgets.HBox([widgets.VBox([nturns, trackobs, DownloadAs, widgets.HBox([TRACK, trackdownload])]), trackout])])
     
     Dashboard = widgets.VBox([widgets.HBox([PBeam, widgets.VBox([BeamGenPlot, BeamOut])]), widgets.HBox([prog, twissout]), trackwidgets])
     return(Dashboard)
