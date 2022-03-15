@@ -137,10 +137,10 @@ def Steinbach_Output(st_in, st_out, spiral_in, hardt_in):
        
     # matplotlib plotting settings
     steinbach_title = widgets.Text(value='Tune and amplitude of beam distribution compared to resonance', description='Title', layout=widgets.Layout(width='auto'))
-    xmin = widgets.FloatText(value=1.66, description='Xmin', step=0.01, layout=widgets.Layout(width='200px'))
-    xmax = widgets.FloatText(value=1.68, description='Xmax', step=0.01, layout=widgets.Layout(width='200px'))
-    ymin = widgets.FloatText(value=0, description='Ymin', step=0.001, layout=widgets.Layout(width='200px'))
-    ymax = widgets.FloatText(value=0.005, description='Ymax', step=0.001, layout=widgets.Layout(width='200px'))
+    xmin = widgets.FloatText(value=1.66, description=r'X$_{min}$', step=0.01, layout=widgets.Layout(width='190px'))
+    xmax = widgets.FloatText(value=1.68, description=r'X$_{max}$', step=0.01, layout=widgets.Layout(width='200px'))
+    ymin = widgets.FloatText(value=0, description=r'Y$_{min}$', step=0.001, layout=widgets.Layout(width='190px'))
+    ymax = widgets.FloatText(value=0.005, description=r'Y$_{max}$', step=0.001, layout=widgets.Layout(width='200px'))
     
     axes = [steinbach_title, xmin, xmax, ymin, ymax]
     

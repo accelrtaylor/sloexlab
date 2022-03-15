@@ -81,14 +81,14 @@ def Hamiltonian_Output(tdf, QX, QX_r, ES, ele_pos, Hamilton_err):
     
     # matplotlib plotting settings
     title = widgets.Text(value='Hamiltonian', description='Title', layout=widgets.Layout(width='auto'))
-    xmin = widgets.FloatText(value=-0.06,  description='Xmin', step=0.01, layout=widgets.Layout(width='200px'))
-    xmax = widgets.FloatText(value= 0.06,  description='Xmax', step=0.01, layout=widgets.Layout(width='200px'))
-    ymin = widgets.FloatText(value=-0.004, description='Ymin', step=0.001, layout=widgets.Layout(width='200px'))
-    ymax = widgets.FloatText(value= 0.004, description='Ymax', step=0.001, layout=widgets.Layout(width='200px'))
+    xmin = widgets.FloatText(value=-0.06,  description=r'X$_{min}$', step=0.01, layout=widgets.Layout(width='200px'))
+    xmax = widgets.FloatText(value= 0.06,  description=r'X$_{max}$', step=0.01, layout=widgets.Layout(width='200px'))
+    ymin = widgets.FloatText(value=-0.004, description=r'Y$_{min}$', step=0.001, layout=widgets.Layout(width='200px'))
+    ymax = widgets.FloatText(value= 0.004, description=r'Y$_{max}$', step=0.001, layout=widgets.Layout(width='200px'))
     
-    rmin = widgets.FloatText(value= -10, description='Rmin 10^', step=1, layout=widgets.Layout(width='200px'))
-    rmax = widgets.FloatText(value= 0.5, description='Rmax 10^', step=1, layout=widgets.Layout(width='200px'))
-    ncount = widgets.BoundedIntText(value=500, description='Ncounts', step=100, min=1, max=10000, layout=widgets.Layout(width='auto'))
+    rmin = widgets.FloatText(value= -10, description=r'R$_{min}$ 10^', step=1, layout=widgets.Layout(width='200px'))
+    rmax = widgets.FloatText(value= 0.5, description=r'R$_{max}$ 10^', step=1, layout=widgets.Layout(width='200px'))
+    ncount = widgets.BoundedIntText(value=500, description=r'N$_{counts}$', step=100, min=1, max=10000, layout=widgets.Layout(width='auto'))
     
     spacer1 = widgets.HTML("  ", layout=widgets.Layout(height='100px'))
     spacer2 = widgets.HTML("  ", layout=widgets.Layout(height='20px'))

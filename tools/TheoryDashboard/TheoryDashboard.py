@@ -17,14 +17,14 @@ def TheoryDashboard():
     style = {'description_width': 'initial'}
     
     '====================== Steinbach Inputs ============================'
-    h1 = widgets.HTML("<h2>Baseline Parameters</h2>")
-    S = widgets.FloatText(value=36.7168, description='S [m-1]', step=0.25)  # Virtual Sextupole Strength
-    QX = widgets.FloatText(value=1.67, description='QX', step=0.001)        # Beam horizontal tune
-    QX_r = widgets.FloatText(value=5/3, description='QX res', step=0.001)   # Resonance horizontal tune
-    Np = widgets.IntText(value=100, description='Np', step=100)             # Number of particles
-    ex = widgets.FloatText(value=1E-6, description='ex rms', step=1E-6)     # RMS Normalised emittance
-    DQX = widgets.FloatText(value=-4, description='DQX', step=0.1)          # Chromaticity
-    DPP = widgets.FloatText(value=1E-4, description='dpp', step=1E-4)       # Particle momentum spread
+    h1 = widgets.HTML("<h2>Baseline Parameters</h2>") 
+    S = widgets.FloatText(value=36.7168, description=r'$S_{virt} [\frac{1}{m}]$', step=0.25)  # Virtual Sextupole Strength
+    QX = widgets.FloatText(value=1.67, description=r'$Q_X$', step=0.001)        # Beam horizontal tune
+    QX_r = widgets.FloatText(value=5/3, description=r'$Q_{X_{res}}$', step=0.001)   # Resonance horizontal tune
+    Np = widgets.IntText(value=100, description=r'$N_p$', step=100)             # Number of particles
+    ex = widgets.FloatText(value=1E-6, description=r'$\epsilon_{x_{rms}} [m]$', step=1E-6)     # RMS Normalised emittance
+    DQX = widgets.FloatText(value=-4, description=r'$dQ_X$', step=0.1)          # Chromaticity
+    DPP = widgets.FloatText(value=1E-4, description=r'$\frac{\Delta p}{p}$', step=1E-4)       # Particle momentum spread
     
     Stbach_out = widgets.Output()
 
@@ -33,8 +33,8 @@ def TheoryDashboard():
 
     '====================== Spiral Step Inputs ============================'
     h2 = widgets.HTML("<h2>Spiral Step Parameters</h2>", layout=widgets.Layout(height='auto'))
-    ES = widgets.FloatText(value=0.055, description='ES', step = 0.01)      # Electrostatic Septum position
-    phi = widgets.FloatText(value=45, description='phi')                    # Orientation of separatrices
+    ES = widgets.FloatText(value=0.055, description=r'$X_{ES} [m]$', step = 0.01)      # Electrostatic Septum position
+    phi = widgets.FloatText(value=45, description=r'$\phi [^{\circ}]$')                    # Orientation of separatrices
     spir = widgets.FloatText(description='Spiral Step', disabled=True)      # Maximum Spiral Step
     kick =  widgets.FloatText(description='Spiral Kick', disabled=True)     # Maximum Spiral Kick
     
@@ -44,11 +44,11 @@ def TheoryDashboard():
     '====================== Hardt Condition Inputs ============================'
     h3 = widgets.HTML("<h2>Hardt Condition Parameters</h2>", layout=widgets.Layout(height='auto'))
     hardt_chroma = widgets.Checkbox(description='Calculate Hardt Condition Chromaticity', value=False, indent=True, style=style)
-    DX = widgets.FloatText(value=3.54, description='Dx', step=0.1)          # Dispersion at ES
-    DXp = widgets.FloatText(value=-0.6, description='Dxp', step=0.1)        # Dispersion ' at ES
-    alf = widgets.FloatText(value=90, description='alpha (deg)', step=1)    # Orientation
-    mues = widgets.FloatText(value=36.7, description='ES muX', step=1)      # Phase-Advance at ES
-    muxr = widgets.FloatText(value=186.1, description='XR muX', step=1)     # Phase-Advance at virtual resonant sextupole
+    DX = widgets.FloatText(value=3.54, description=r'$D_x [m]$', step=0.1)          # Dispersion at ES
+    DXp = widgets.FloatText(value=-0.6, description=r"$D_x'$", step=0.1)        # Dispersion ' at ES
+    alf = widgets.FloatText(value=90, description=r'$\alpha [^{\circ}]$', step=1)    # Orientation
+    mues = widgets.FloatText(value=36.7, description=r'ES $\mu_X$', step=1)      # Phase-Advance at ES
+    muxr = widgets.FloatText(value=186.1, description=r'XR $\mu_X$', step=1)     # Phase-Advance at virtual resonant sextupole
     
     Hardt = [hardt_chroma, S, QX, DX, DXp, alf, mues, muxr]                 #Listing all widgets which affect the Hardt condition
     col_hardt = widgets.VBox([h3, DX, DXp, alf, mues, muxr, hardt_chroma])          #Putting Hardt Condition widgets into the dashboard
